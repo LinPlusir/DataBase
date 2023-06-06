@@ -1,0 +1,48 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import Util.StringUtil;
+import entity.Department;
+
+public class DepartmentDao {
+	
+	//部门类别添加
+	public int add(Connection con, Department department)throws Exception{
+		String sql="insert into db_user2021_205.department (depart_name,function) values(?,?)";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, department.getDepart_name());
+		pstmt.setString(2, department.getFunction());
+		return pstmt.executeUpdate();
+	}
+	
+	//查询部门
+	public ResultSet list(Connection con,Department department)throws Exception{
+		StringBuffer strb=new StringBuffer("select*from db_user2021_205.department where 1=1");
+		if(StringUtil.isNotEmpty(department.getDepart_name())) {
+			strb.append(" and depart_name like '%"+department.getDepart_name()+"%'");
+		}
+		PreparedStatement pstmt=con.prepareStatement(strb.toString().replace("and", "where"));
+		return pstmt.executeQuery();
+	}
+	
+	//删除部门
+	public int delete(Connection con,String depart_id)throws Exception{
+		String sql="delete from db_user2021_205.department where depart_id=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, depart_id);
+		return pstmt.executeUpdate();
+	}
+	
+	//修改部门
+	public int update(Connection con,Department department)throws Exception{
+		String sql="update db_user2021_205.department set depart_name=?,function=? where depart_id=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, department.getDepart_name());
+		pstmt.setString(2,department.getFunction());
+		pstmt.setInt(3, department.getDepart_id());
+		return pstmt.executeUpdate();
+	}
+}

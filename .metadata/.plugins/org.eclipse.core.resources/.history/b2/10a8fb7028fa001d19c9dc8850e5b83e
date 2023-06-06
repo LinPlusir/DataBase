@@ -1,0 +1,628 @@
+package view;
+
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.Vector;
+
+import javax.sql.rowset.JoinRowSet;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+
+import Util.DBUtil;
+import Util.StringUtil;
+import dao.DepartmentDao;
+import dao.PostDao;
+import dao.StaffDao;
+import entity.Department;
+import entity.Post;
+import entity.Staff;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+
+public class StaffManagerInterFrame extends JInternalFrame {
+	private JTable StaffTable;
+	
+	private DBUtil dbUtil=new DBUtil();
+	private DepartmentDao departmentDao=new DepartmentDao();
+	private PostDao postDao=new PostDao();
+	private StaffDao staffDao=new StaffDao(); 
+	private JTextField s_staff_nameTxt;
+	private JTextField s_staff_idTxt;
+	
+	private JComboBox s_departjcb;
+	private JComboBox s_postjcb;
+	private JTextField idTxt;
+	private JTextField staff_idTxt;
+	private JTextField staff_nameTxt;
+	private JRadioButton manJRB;
+	private JRadioButton womanJRB;
+	private JTextField phoneTxt;
+	private JComboBox departJCB;
+	private JComboBox postJCB;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					StaffManagerInterFrame frame = new StaffManagerInterFrame();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public StaffManagerInterFrame() {
+		setIconifiable(true);
+		setClosable(true);
+		setEnabled(false);
+		setTitle("基本信息维护");
+		setBounds(100, 100, 730, 646);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "\u641C\u7D22\u6761\u4EF6", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "\u8868\u5355\u64CD\u4F5C", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPane, Alignment.LEADING)
+								.addComponent(panel, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(52, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(panel_1, 0, 0, Short.MAX_VALUE)
+							.addGap(6))))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 269, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(46, Short.MAX_VALUE))
+		);
+		
+		JLabel ID = new JLabel("编号");
+		ID.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel STAFF_ID = new JLabel("工号");
+		STAFF_ID.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel DEPARTNAME = new JLabel("部门");
+		DEPARTNAME.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		idTxt = new JTextField();
+		idTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		idTxt.setEditable(false);
+		idTxt.setColumns(10);
+		
+		staff_idTxt = new JTextField();
+		staff_idTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		staff_idTxt.setEditable(false);
+		staff_idTxt.setColumns(10);
+		
+		departJCB = new JComboBox();
+		departJCB.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel STAFF_NAME = new JLabel("姓名");
+		STAFF_NAME.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		staff_nameTxt = new JTextField();
+		staff_nameTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		staff_nameTxt.setColumns(10);
+		
+		JLabel PHONE = new JLabel("电话");
+		PHONE.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		phoneTxt = new JTextField();
+		phoneTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		phoneTxt.setColumns(10);
+		
+		JLabel POSTNAME = new JLabel("岗位");
+		POSTNAME.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		postJCB = new JComboBox();
+		postJCB.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JButton btnNewButton_1 = new JButton("修改");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				staffUpdateActionPerformed(e);
+			}
+		});
+		btnNewButton_1.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JButton btnNewButton_1_1 = new JButton("删除");
+		btnNewButton_1_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_1_1.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel GENDER = new JLabel("性别");
+		GENDER.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		manJRB = new JRadioButton("男");
+		buttonGroup.add(manJRB);
+		manJRB.setSelected(true);
+		manJRB.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		womanJRB = new JRadioButton("女");
+		buttonGroup.add(womanJRB);
+		womanJRB.setFont(new Font("宋体", Font.PLAIN, 20));
+		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
+		gl_panel_1.setHorizontalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(ID, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(idTxt))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(STAFF_ID, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(staff_idTxt))
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+								.addComponent(DEPARTNAME, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+								.addComponent(POSTNAME, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(departJCB, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(postJCB, 0, 180, Short.MAX_VALUE))))
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGap(54)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+								.addComponent(STAFF_NAME, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+								.addComponent(PHONE, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+								.addComponent(GENDER, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
+							.addGap(42))
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+							.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)))
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addGap(63)
+							.addComponent(btnNewButton_1_1, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE))
+						.addComponent(phoneTxt, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+						.addGroup(gl_panel_1.createSequentialGroup()
+							.addComponent(manJRB, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(womanJRB, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE))
+						.addComponent(staff_nameTxt, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))
+					.addGap(369))
+		);
+		gl_panel_1.setVerticalGroup(
+			gl_panel_1.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(ID)
+						.addComponent(idTxt, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+						.addComponent(staff_nameTxt, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+						.addComponent(STAFF_NAME, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(STAFF_ID)
+						.addComponent(staff_idTxt, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
+						.addComponent(manJRB)
+						.addComponent(GENDER)
+						.addComponent(womanJRB))
+					.addGap(18)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(DEPARTNAME)
+						.addComponent(departJCB, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+						.addComponent(phoneTxt, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
+						.addComponent(PHONE, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
+						.addComponent(postJCB, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
+						.addComponent(POSTNAME)
+						.addComponent(btnNewButton_1_1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 49, GroupLayout.PREFERRED_SIZE))
+					.addGap(4))
+		);
+		panel_1.setLayout(gl_panel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel("姓名");
+		lblNewLabel_2.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel lblNewLabel_3 = new JLabel("部门");
+		lblNewLabel_3.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel lblNewLabel = new JLabel("姓名");
+		lblNewLabel.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		s_staff_nameTxt = new JTextField();
+		s_staff_nameTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		s_staff_nameTxt.setColumns(10);
+		
+		JLabel lblNewLabel_1 = new JLabel("工号");
+		lblNewLabel_1.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		s_staff_idTxt = new JTextField();
+		s_staff_idTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		s_staff_idTxt.setColumns(10);
+		
+		JLabel lblNewLabel_1_1 = new JLabel("部门");
+		lblNewLabel_1_1.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		s_departjcb = new JComboBox();
+		s_departjcb.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel lblNewLabel_1_2 = new JLabel("岗位");
+		lblNewLabel_1_2.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		s_postjcb = new JComboBox();
+		s_postjcb.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JButton btnNewButton = new JButton("查询");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				staffSearchActionPerformed(e);
+			}
+		});
+		btnNewButton.setFont(new Font("宋体", Font.PLAIN, 20));
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblNewLabel_1_1, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(s_departjcb, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(8)
+							.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(s_staff_nameTxt, GroupLayout.PREFERRED_SIZE, 187, GroupLayout.PREFERRED_SIZE)))
+					.addGap(50)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_1_2, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(s_staff_idTxt, 170, 170, 170)
+						.addComponent(s_postjcb, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE))
+					.addGap(35)
+					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+					.addGap(27))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(12)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(s_staff_idTxt, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+								.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+							.addGap(18)
+							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(s_postjcb, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+								.addComponent(lblNewLabel_1_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap())
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(s_staff_nameTxt, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNewLabel))
+							.addGap(18)
+							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblNewLabel_1_1, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+								.addComponent(s_departjcb, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
+							.addGap(26))))
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(25)
+					.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+					.addGap(36))
+		);
+		panel.setLayout(gl_panel);
+		
+		StaffTable = new JTable();
+		StaffTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				staffTableMousePressed(e);
+			}
+		});
+		StaffTable.setFont(new Font("Monospaced", Font.PLAIN, 14));
+		StaffTable.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"\u7F16\u53F7", "\u5458\u5DE5\u59D3\u540D", "\u5458\u5DE5\u5DE5\u53F7", "\u6027\u522B", "\u90E8\u95E8", "\u5C97\u4F4D", "\u7535\u8BDD"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		scrollPane.setViewportView(StaffTable);
+		getContentPane().setLayout(groupLayout);
+
+		this.fillTable(new Staff());
+		this.filljcb("search");
+		this.filljcb("modify");
+	}
+	
+	//修改事件处理
+	protected void staffUpdateActionPerformed(ActionEvent e) {
+		// TODO 自动生成的方法存根
+		String id=this.idTxt.getText();
+		String staff_id=this.staff_idTxt.getText();
+		String staff_name=this.staff_nameTxt.getText();
+		String phone=this.phoneTxt.getText();
+		if(StringUtil.isEmpty(id))
+		{
+			JOptionPane.showMessageDialog(null,"请选择要修改的记录！");
+			return;
+		}
+		if(StringUtil.isEmpty(staff_name))
+		{
+			JOptionPane.showMessageDialog(null,"员工姓名不能为空！");
+			return;
+		}
+		if(StringUtil.isEmpty(staff_id))
+		{
+			JOptionPane.showMessageDialog(null,"员工工号不能为空！");
+			return;
+		}
+		if(StringUtil.isEmpty(phone))
+		{
+			JOptionPane.showMessageDialog(null,"电话号码不能为空！");
+			return;
+		}
+		
+		String gender="";
+		if (this.manJRB.isSelected()) {
+			gender="男";
+		}
+		else if(this.womanJRB.isSelected())
+		{
+			gender="女";
+		}
+		
+		Department department=(Department) this.departJCB.getSelectedItem();
+		int departid=department.getDepart_id();
+		Post post=(Post) this.postJCB.getSelectedItem();
+		int postid=post.getPost_id();
+		
+		Staff staff=new Staff(Integer.parseInt(id), staff_name, staff_id, gender,  departid, postid, phone);
+		
+		Connection con=null;
+		try {
+			con=dbUtil.getCon();
+			int addnum=staffDao.update(con, staff);
+			if(addnum==1)
+			{
+				JOptionPane.showMessageDialog(null,"员工基本信息修改成功！");
+				resetValues();
+			}
+			else {
+				JOptionPane.showMessageDialog(null,"员工基本信息修改失败！");
+			}
+		} catch (Exception e1) {
+			// TODO 自动生成的 catch 块
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null,"员工基本信息修改失败！");
+		}finally {
+			try {
+				dbUtil.closeCon(con);
+			} catch (Exception e1) {
+				// TODO 自动生成的 catch 块
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	//重置表单
+		private void resetValues() {
+			// TODO 自动生成的方法存根
+			this.idTxt.setText("");
+			this.staff_nameTxt.setText("");
+			this.staff_idTxt.setText("");
+			this.manJRB.setSelected(true);
+			this.phoneTxt.setText("");
+			if(this.departJCB.getItemCount()>0)
+			{
+				this.departJCB.setSelectedIndex(0);
+			}
+			if(this.postJCB.getItemCount()>0)
+			{
+				this.postJCB.setSelectedIndex(0);
+			}
+		}
+
+	//表格点击事件
+	private void staffTableMousePressed(MouseEvent e) {
+		// TODO 自动生成的方法存根
+		int row=this.StaffTable.getSelectedRow();
+		this.idTxt.setText((String) this.StaffTable.getValueAt(row, 0));
+		this.staff_nameTxt.setText((String) this.StaffTable.getValueAt(row,1));
+		this.staff_idTxt.setText((String) this.StaffTable.getValueAt(row, 2));
+		String sex=(String)this.StaffTable.getValueAt(row, 3);
+		if("男".equals(sex)){
+			this.manJRB.setSelected(true);
+		}
+		else if("女".equals(sex)){
+			this.womanJRB.setSelected(true);
+		}
+		
+		String d_name=(String) this.StaffTable.getValueAt(row, 4);
+		int n=this.departJCB.getItemCount();
+		for(int i=0;i<n;i++)
+		{
+			Department item1=(Department) this.departJCB.getItemAt(i);
+			if(item1.getDepart_name().equals(d_name)) {
+				this.departJCB.setSelectedIndex(i);
+			}
+		}
+		
+		String p_name=(String) this.StaffTable.getValueAt(row, 5);
+		int m=this.postJCB.getItemCount();
+		for(int i=0;i<m;i++)
+		{
+			Post item2=(Post) this.postJCB.getItemAt(i);
+			if(item2.getPost_name().equals(p_name)) {
+				this.postJCB.setSelectedIndex(i);
+			}
+		}
+		this.phoneTxt.setText((String) this.StaffTable.getValueAt(row, 6));
+		
+	}
+
+	//查询事件处理
+	private void staffSearchActionPerformed(ActionEvent e) {
+		// TODO 自动生成的方法存根
+		String staff_name=this.s_staff_nameTxt.getText();
+		String staff_id=this.s_staff_idTxt.getText();
+		Department department=(Department) this.s_departjcb.getSelectedItem();
+		Post post=(Post) this.s_postjcb.getSelectedItem();
+		int departid=department.getDepart_id();
+		int postid=post.getPost_id();
+		
+		Staff staff=new Staff( staff_name, staff_id, departid, postid);
+		this.fillTable(staff);
+	}
+
+	//初始化下拉框
+	private void filljcb(String type)
+	{
+		Connection con=null;
+		Department department=null;
+		Post post=null;
+		try {
+			con=dbUtil.getCon();
+			ResultSet rs=departmentDao.list(con, new Department());
+			ResultSet rs1=postDao.list(con, new Post());
+			if("search".equals(type)) {
+				department=new Department();
+				post=new Post();
+				department.setDepart_name("请选择...");
+				post.setPost_name("请选择...");
+				department.setDepart_id(-1);
+				post.setPost_id(-1);
+				this.s_departjcb.addItem(department);
+				this.s_postjcb.addItem(post);
+			}
+			while(rs.next())
+			{
+				department=new Department();
+				department.setDepart_name(rs.getString("depart_name"));
+				department.setDepart_id(rs.getInt("depart_id"));
+				
+				if("search".equals(type)) {
+					this.s_departjcb.addItem(department);
+				}else if("modify".equals(type)){
+					this.departJCB.addItem(department);
+				}
+			}
+			while(rs1.next())
+			{
+				post=new Post();
+				post.setPost_name(rs1.getString("post_name"));
+				post.setPost_id(rs1.getInt("post_id"));
+				
+				if("search".equals(type)) {
+					this.s_postjcb.addItem(post);
+				}else if("modify".equals(type)){
+					this.postJCB.addItem(post);
+				}
+			}
+		} catch (Exception e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}finally {
+			try {
+				dbUtil.closeCon(con);
+			} catch (Exception e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	//初始化表格
+	private void fillTable(Staff staff) {
+		DefaultTableModel dtm=(DefaultTableModel) StaffTable.getModel();
+		dtm.setRowCount(0);
+		Connection con=null;
+		try {
+			con=dbUtil.getCon();
+			ResultSet rs=staffDao.list(con, staff);
+			while(rs.next())
+			{
+				Vector v=new Vector();
+				v.add(rs.getString("id"));
+				v.add(rs.getString("staff_name"));
+				v.add(rs.getString("staff_id"));
+				v.add(rs.getString("gender"));
+				v.add(rs.getString("depart_name"));//与表不同
+				v.add(rs.getString("post_name"));//+1
+				v.add(rs.getString("phone"));
+				dtm.addRow(v);
+			}
+		} catch (Exception e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}finally {
+			try {
+				dbUtil.closeCon(con);
+			} catch (Exception e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+		}
+		
+	}
+}

@@ -1,0 +1,91 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import Util.StringUtil;
+import entity.Staff;
+
+public class StaffDao {
+	//基本信息录入
+	public int add(Connection con,Staff staff)throws Exception{
+		String sql="insert into db_user2021_205.staff_information (staff_name,staff_id,gender,departid,postid,phone) values(?,?,?,?,?,?)";//11个问号
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, staff.getStaff_name());
+		pstmt.setString(2, staff.getStaff_id());
+		pstmt.setString(3, staff.getGender());
+		pstmt.setInt(4, staff.getDepartid());
+		pstmt.setInt(5, staff.getPostid());
+		pstmt.setString(6, staff.getPhone());
+		return pstmt.executeUpdate();
+	}
+	
+	
+	//员工基本信息查询
+	public ResultSet list(Connection con,Staff staff )throws Exception{
+		StringBuffer strSql = new StringBuffer("SELECT * FROM db_user2021_205.staff_information si, department d, post p WHERE si.departid=d.depart_id AND si.postid=p.post_id");
+		List<Object> params = new ArrayList<Object>();
+		if (StringUtil.isNotEmpty(staff.getStaff_name())) {
+		    strSql.append(" AND si.staff_name LIKE ?");
+		    params.add("%" + staff.getStaff_name() + "%");
+		}
+		if (StringUtil.isNotEmpty(staff.getStaff_id())) {
+		    strSql.append(" AND si.staff_id LIKE ?");
+		    params.add("%" + staff.getStaff_id() + "%");
+		}
+		if (staff.getDepartid() != null && staff.getDepartid() != -1) {
+		    strSql.append(" AND si.departid = ?");
+		    params.add(staff.getDepartid());
+		}
+		if (staff.getPostid() != null && staff.getPostid() != -1) {
+		    strSql.append(" AND si.postid = ?");
+		    params.add(staff.getPostid());
+		}
+
+		// 在这里添加输出 SQL 语句的代码
+		System.out.println("SQL: " + strSql.toString());
+		PreparedStatement pstmt = con.prepareStatement(strSql.toString());
+
+		// 设置参数
+		for (int i = 0; i < params.size(); i++) {
+		    Object obj = params.get(i);
+		    if (obj instanceof String) {
+		        pstmt.setString(i + 1, (String) obj);
+		    } else if (obj instanceof Integer) {
+		        pstmt.setInt(i + 1, (Integer) obj);
+		    } else if (obj instanceof Date) {
+		        pstmt.setDate(i + 1, (Date) obj);
+		    } else {
+		        pstmt.setObject(i + 1, obj);
+		    }
+		}
+		return pstmt.executeQuery();
+	}
+	
+	//员工信息删除
+	public int delete(Connection con, String staff_id)throws Exception{
+		String sql="delete from db_user2021_205.staff_information where staff_id=?";
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, staff_id);
+		return pstmt.executeUpdate();
+	}
+	
+	//员工信息修改
+	public int update(Connection con, Staff staff) throws Exception {
+	    String sql = "UPDATE db_user2021_205.staff_information SET staff_name=?, staff_id=?, gender=?, departid=?, postid=?, phone=? WHERE id=?";
+	    PreparedStatement pstmt = con.prepareStatement(sql);
+	    pstmt.setString(1, staff.getStaff_name());
+	    pstmt.setString(2, staff.getStaff_id());
+	    pstmt.setString(3, staff.getGender());
+	    pstmt.setInt(4, staff.getDepartid());
+	    pstmt.setInt(5, staff.getPostid());
+	    pstmt.setString(6, staff.getPhone());
+	    pstmt.setInt(7, staff.getId());
+	    return pstmt.executeUpdate();
+	}
+	
+}

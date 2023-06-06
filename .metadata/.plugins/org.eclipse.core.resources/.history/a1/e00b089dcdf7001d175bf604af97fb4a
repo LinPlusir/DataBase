@@ -1,0 +1,328 @@
+package view;
+
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
+import Util.DBUtil;
+import Util.StringUtil;
+import dao.DepartmentDao;
+import dao.PostDao;
+import dao.StaffDao;
+import entity.Department;
+import entity.Post;
+import entity.Staff;
+
+public class StaffAddInterFrame extends JInternalFrame {
+	private JTextField staff_nameTxt;
+	private JTextField staff_idTxt;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private JTextField phoneNumTxt;
+	
+	
+	private DBUtil dbUtil=new DBUtil();
+	private DepartmentDao departmentDao=new DepartmentDao();
+	private PostDao postDao=new PostDao();
+	private StaffDao staffDao=new StaffDao(); 
+
+	
+	private JComboBox departJCB;
+	private JComboBox postJCB;
+	
+	private JRadioButton manjrb;
+	private JRadioButton womanjrb;
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					StaffAddInterFrame frame = new StaffAddInterFrame();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public StaffAddInterFrame() {
+		setIconifiable(true);
+		setClosable(true);
+		setTitle("基本信息录入");
+		setBounds(100, 100, 634, 389);
+		
+		JLabel staff_name = new JLabel("姓名");
+		staff_name.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		staff_nameTxt = new JTextField();
+		staff_nameTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		staff_nameTxt.setColumns(10);
+		
+		JLabel staff_id = new JLabel("工号");
+		staff_id.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		staff_idTxt = new JTextField();
+		staff_idTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		staff_idTxt.setColumns(10);
+		
+		JLabel gender = new JLabel("性别");
+		gender.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		manjrb = new JRadioButton("男");
+		manjrb.setSelected(true);
+		buttonGroup.add(manjrb);
+		manjrb.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		womanjrb = new JRadioButton("女");
+		buttonGroup.add(womanjrb);
+		womanjrb.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JLabel depart_name = new JLabel("部门");
+		depart_name.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		departJCB = new JComboBox();
+		
+		JLabel post_name = new JLabel("岗位");
+		post_name.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		postJCB = new JComboBox();
+		
+		JLabel phoneNum = new JLabel("电话号码");
+		phoneNum.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		phoneNumTxt = new JTextField();
+		phoneNumTxt.setFont(new Font("宋体", Font.PLAIN, 20));
+		phoneNumTxt.setColumns(10);
+		
+		JButton btnNewButton = new JButton("添加");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StaffAddActionPerformed(e);
+			}
+		});
+		btnNewButton.setFont(new Font("宋体", Font.PLAIN, 20));
+		
+		JButton btnNewButton_1 = new JButton("重置");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resetValues();
+			}
+		});
+		btnNewButton_1.setFont(new Font("宋体", Font.PLAIN, 20));
+		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(staff_name, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(staff_nameTxt, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(gender, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+								.addGap(32)
+								.addComponent(manjrb, GroupLayout.PREFERRED_SIZE, 59, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(womanjrb, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(phoneNum, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(phoneNumTxt, GroupLayout.PREFERRED_SIZE, 188, GroupLayout.PREFERRED_SIZE)))
+					.addGap(32)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(depart_name, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+						.addComponent(staff_id)
+						.addComponent(post_name, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(departJCB, 0, 205, Short.MAX_VALUE)
+						.addComponent(postJCB, 0, 205, Short.MAX_VALUE)
+						.addComponent(staff_idTxt))
+					.addContainerGap(53, Short.MAX_VALUE))
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addContainerGap(328, Short.MAX_VALUE)
+					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+					.addGap(32)
+					.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+					.addGap(68))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(53)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(staff_nameTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(staff_name)
+						.addComponent(staff_id)
+						.addComponent(staff_idTxt, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+					.addGap(31)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(gender, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+						.addComponent(manjrb)
+						.addComponent(womanjrb)
+						.addComponent(depart_name, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+						.addComponent(departJCB, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(32)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(post_name, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+								.addComponent(postJCB, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
+							.addGap(51)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnNewButton)
+								.addComponent(btnNewButton_1)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(36)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(phoneNum, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+								.addComponent(phoneNumTxt, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))))
+					.addGap(451))
+		);
+		getContentPane().setLayout(groupLayout);
+		
+		this.fillJCB();
+	}
+	
+	
+	//基本信息添加事件
+	private void StaffAddActionPerformed(ActionEvent e) {
+		// TODO 自动生成的方法存根
+		String staff_name=this.staff_nameTxt.getText();
+		String staff_id=this.staff_idTxt.getText();
+		String phoneNum=this.phoneNumTxt.getText();
+		
+		if(StringUtil.isEmpty(staff_name))
+		{
+			JOptionPane.showMessageDialog(null,"姓名不能为空！");
+			return;
+		}
+		if(StringUtil.isEmpty(staff_id))
+		{
+			JOptionPane.showMessageDialog(null,"工号能为空！");
+			return;
+		}
+		if(StringUtil.isEmpty(phoneNum))
+		{
+			JOptionPane.showMessageDialog(null,"电话号码不能为空！");
+			return;
+		}
+		
+		String gender="";
+		if (this.manjrb.isSelected()) {
+			gender="男";
+		}
+		else if(this.womanjrb.isSelected())
+		{
+			gender="女";
+		}
+		
+		Department department=(Department) this.departJCB.getSelectedItem();
+		int departid=department.getDepart_id();
+		Post post=(Post) this.postJCB.getSelectedItem();
+		int postid=post.getPost_id();
+		
+		Staff staff=new Staff(staff_name,staff_id, gender, departid,  postid,  phoneNum);
+		Connection con=null;
+		try {
+			con=dbUtil.getCon();
+			int addnum=staffDao.add(con, staff);
+			if(addnum==1)
+			{
+				JOptionPane.showMessageDialog(null,"员工基本信息添加成功！");
+				resetValues();
+			}
+			else {
+				JOptionPane.showMessageDialog(null,"员工基本信息添加失败！");
+			}
+		} catch (Exception e1) {
+			// TODO 自动生成的 catch 块
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null,"员工基本信息添加失败！");
+		}finally {
+			try {
+				dbUtil.closeCon(con);
+			} catch (Exception e1) {
+				// TODO 自动生成的 catch 块
+				e1.printStackTrace();
+			}
+		}
+		
+	}
+
+	//重置表单
+	private void resetValues() {
+		// TODO 自动生成的方法存根
+		this.staff_nameTxt.setText("");
+		this.staff_idTxt.setText("");
+		this.manjrb.setSelected(true);
+		this.phoneNumTxt.setText("");
+		if(this.departJCB.getItemCount()>0)
+		{
+			this.departJCB.setSelectedIndex(0);
+		}
+		if(this.postJCB.getItemCount()>0)
+		{
+			this.postJCB.setSelectedIndex(0);
+		}
+	}
+
+	//初始化下拉框
+	private void fillJCB() {
+		Connection con=null;
+		Department department=null;
+		Post post=null;
+		try {
+			con=dbUtil.getCon();
+			ResultSet rs=departmentDao.list(con, new Department());
+			ResultSet rs1=postDao.list(con, new Post());
+			
+			while(rs.next()) {
+				department=new Department();
+				department.setDepart_id(rs.getInt("depart_id"));
+				department.setDepart_name(rs.getString("depart_name"));
+				this.departJCB.addItem(department);
+			}
+			while(rs1.next()) {
+				post=new Post();
+				post.setPost_id(rs1.getInt("post_id"));
+				post.setPost_name(rs1.getString("post_name"));
+				this.postJCB.addItem(post);
+			}
+		} catch (Exception e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}finally {
+			try {
+				dbUtil.closeCon(con);
+			} catch (Exception e) {
+				// TODO 自动生成的 catch 块
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+}

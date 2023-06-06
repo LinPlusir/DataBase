@@ -1,0 +1,48 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import Util.StringUtil;
+import entity.Staff;
+
+public class StaffDao {
+	//基本信息录入
+	public int add(Connection con,Staff staff)throws Exception{
+		String sql="insert into db_user2021_205.staff_information (staff_name,staff_id,gender,departid,postid,phoneNum) values(?,?,?,?,?,?)";//11个问号
+		PreparedStatement pstmt=con.prepareStatement(sql);
+		pstmt.setString(1, staff.getStaff_name());
+		pstmt.setString(2, staff.getStaff_id());
+		pstmt.setString(3, staff.getGender());
+		pstmt.setInt(4, staff.getDepartid());
+		pstmt.setInt(5, staff.getPostid());
+		pstmt.setString(6, staff.getPhoneNum());
+		return pstmt.executeUpdate();
+	}
+	
+	
+	//员工基本信息查询
+	public ResultSet list(Connection con,Staff staff )throws Exception{
+		StringBuffer strb=new StringBuffer("select db_user2021_205.staff_information si,department d,post p where si.departid=d.depart_id AND si.postid=p.post_id");
+		if(StringUtil.isNotEmpty(staff.getStaff_name()))
+		{
+			strb.append(" and si.staff_name like '%"+staff.getStaff_name()+"%'");
+		}
+		if(StringUtil.isNotEmpty(staff.getStaff_id()))
+		{
+			strb.append(" and si.staff_id like '%"+staff.getStaff_id()+"%'");
+		}
+		if(staff.getDepartid()!=null&& staff.getDepartid()!=-1)
+		{
+			strb.append(" and si.depart_id ="+staff.getDepartid());
+		}
+		if(staff.getPostid()!=null&& staff.getPostid()!=-1)
+		{
+			strb.append(" and si.post_id ="+staff.getPostid());
+		}
+		PreparedStatement pstmt=con.prepareStatement(strb.toString());
+		return pstmt.executeQuery();
+	}
+	
+}

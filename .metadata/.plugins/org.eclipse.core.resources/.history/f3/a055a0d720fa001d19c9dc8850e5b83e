@@ -1,0 +1,88 @@
+package entity;
+
+public class Staff {
+	private int id;
+	private String staff_name;
+	private String staff_id;
+	private String gender;
+	private Integer departid;
+	private String depart_name;
+	private Integer postid;
+	private String post_name;
+	private String phone;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getStaff_name() {
+		return staff_name;
+	}
+	public void setStaff_name(String staff_name) {
+		this.staff_name = staff_name;
+	}
+	public String getStaff_id() {
+		return staff_id;
+	}
+	public void setStaff_id(String staff_id) {
+		this.staff_id = staff_id;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public Integer getDepartid() {
+		return departid;
+	}
+	public void setDepartid(Integer departid) {
+		this.departid = departid;
+	}
+	public String getDepart_name() {
+		return depart_name;
+	}
+	public void setDepart_name(String depart_name) {
+		this.depart_name = depart_name;
+	}
+	public Integer getPostid() {
+		return postid;
+	}
+	public void setPostid(Integer postid) {
+		this.postid = postid;
+	}
+	public String getPost_name() {
+		return post_name;
+	}
+	public void setPost_name(String post_name) {
+		this.post_name = post_name;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhoneNum(String phone) {
+		this.phone = phone;
+	}
+	public Staff() {
+		super();
+		// TODO 自动生成的构造函数存根
+	}
+	public Staff(String staff_name, String staff_id, String gender, Integer departid, Integer postid, String phone) {
+		super();
+		this.staff_name = staff_name;
+		this.staff_id = staff_id;
+		this.gender = gender;
+		this.departid = departid;
+		this.postid = postid;
+		this.phone = phone;
+	}
+	public Staff(String staff_name, String staff_id, Integer departid, Integer postid) {
+		super();
+		this.staff_name = staff_name;
+		this.staff_id = staff_id;
+		this.departid = departid;
+		this.postid = postid;
+	}
+	
+}

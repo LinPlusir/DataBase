@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="删除资源“helloworld”" deleteContents="true" description="删除资源“helloworld”" element1="/helloworld" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1683702706504"/>&#x0A;<refactoring comment="删除资源“openGauss_JDBC”" deleteContents="true" description="删除资源“openGauss_JDBC”" element1="/openGauss_JDBC" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1683708106944"/>&#x0A;<refactoring comment="删除资源“rlzy”" deleteContents="false" description="删除资源“rlzy”" element1="/rlzy" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1683716140569"/>
+</session>

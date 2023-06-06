@@ -1,0 +1,10 @@
+/**
+ * 
+ */
+/**
+ * @author Mich
+ *
+ */
+module openGauss_JDBC {
+	requires java.sql;
+}

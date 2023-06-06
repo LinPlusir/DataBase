@@ -1,0 +1,5 @@
+package openGauss_JDBC;
+
+public class SQLException extends Exception {
+
+}
